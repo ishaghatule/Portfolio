@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  /* One warm theme. One action accent (blue). No purple. */
+  --color-paper: #ece4d6;
+  --color-paper-2: #e6dcc9;
+  --color-card: #ffffff;
+  --color-field: #fafbfc;
+  --color-ink: #1b2733;
+  --color-subtle: #51607a;    /* AA on paper (5.0:1) and on white (6.3:1) */
+  --color-line: #e2ddd0;      /* hairlines on paper */
+  --color-cardline: #dfe1e6;  /* hairlines on white */
+  --color-action: #2b5cff;    /* the single action accent */
+  --color-action-ink: #1e47d6;
+  --color-story: #22a06b;     /* status/done only */
+  --color-storyink: #216e4e;  /* darker green for AA text on green tint */
+  --color-terra: #cc4e22;     /* handwriting / pins only; AA large-text on paper (3.5:1) */
+  --color-peach: #f6cdbf;     /* sticky note */
+  --color-butter: #f7e3a1;    /* sticky note */
+  --color-sage: #cfe3b8;      /* sticky note */
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-script: var(--font-caveat), ui-rounded, cursive;
+
+  --radius-card: 16px;
+  --radius-btn: 10px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* Hand-drawn marker underline (decoration, justified by the reference).
+   Uses a line-following background so it stays correct when the phrase
+   wraps across lines on mobile (no stray fragment). */
+.marker-underline {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--color-action) 90%, transparent),
+    color-mix(in srgb, var(--color-action) 90%, transparent)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 90%;
+  background-size: 100% 0.18em;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Reduced motion: collapse every animation and transition to static. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
