@@ -17,7 +17,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type PanInfo,
+  type Variants,
+} from "motion/react";
 import {
   BookmarkSimple,
   ArrowUp,
@@ -32,7 +38,7 @@ import {
   X,
   PencilSimple,
   MapPin,
-  GraduationCap,
+  BookOpen,
   Briefcase,
   Compass,
   Kanban,
@@ -40,6 +46,7 @@ import {
   Code,
   ChartBar,
   Certificate,
+  Clock,
   LinkedinLogo,
   GithubLogo,
   EnvelopeSimple,
@@ -72,21 +79,12 @@ const STATS = [
 ];
 
 const ABOUT_FIELDS = [
-  {
-    icon: Briefcase,
-    label: "Experience",
-    value: "Product Manager at fiscor.ai.",
-  },
-  {
-    icon: GraduationCap,
-    label: "Education",
-    value: "Virginia Tech MBA, dual BS in CS and Cybersecurity.",
-  },
   { icon: MapPin, label: "Location", value: "Foster City, California." },
   {
-    icon: Compass,
-    label: "Focus",
-    value: "Fintech, AI-native products, 0 to 1.",
+    icon: BookOpen,
+    label: "Currently reading",
+    value:
+      "“The President Is Missing,” by Bill Clinton and James Patterson.",
   },
 ];
 
@@ -761,6 +759,219 @@ function CardModal({
 
 /* ----------------------------------------------------------------- page */
 
+const BACKLOG_TASKS = [
+  "Fix the login bug",
+  "Write the PRD",
+  "Reply to Slack",
+  "Triage a P1",
+  "Groom the backlog",
+  "Update the roadmap",
+  "Ship the hotfix",
+  "Close the sprint",
+  "Review the designs",
+  "Cut the scope",
+  "Answer the recruiter",
+  "Resolve the merge conflict",
+  "Prep the standup",
+  "Chase the sign-off",
+];
+
+function BacklogGame() {
+  const rise = useRise();
+  const reduce = useReducedMotion();
+  const [status, setStatus] = useState<"idle" | "playing" | "done">("idle");
+  const [tickets, setTickets] = useState<
+    { id: number; label: string; x: number; y: number }[]
+  >([]);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const idRef = useRef(0);
+  const arenaRef = useRef<HTMLDivElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  function start() {
+    setTickets([]);
+    setScore(0);
+    setTimeLeft(15);
+    setStatus("playing");
+  }
+
+  useEffect(() => {
+    if (status !== "playing") return;
+    const spawn = setInterval(() => {
+      setTickets((prev) => {
+        if (prev.length >= 6) return prev;
+        idRef.current += 1;
+        const label =
+          BACKLOG_TASKS[Math.floor(Math.random() * BACKLOG_TASKS.length)];
+        return [
+          ...prev,
+          {
+            id: idRef.current,
+            label,
+            x: 4 + Math.random() * 36,
+            y: 6 + Math.random() * 66,
+          },
+        ];
+      });
+    }, 650);
+    const timer = setInterval(() => {
+      setTimeLeft((t) => (t <= 1 ? 0 : t - 1));
+    }, 1000);
+    return () => {
+      clearInterval(spawn);
+      clearInterval(timer);
+    };
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "playing" && timeLeft === 0) setStatus("done");
+  }, [timeLeft, status]);
+
+  function clearTicket(id: number) {
+    setTickets((prev) => prev.filter((t) => t.id !== id));
+    setScore((s) => s + 1);
+  }
+
+  function handleDragEnd(id: number, info: PanInfo) {
+    const dz = dropRef.current?.getBoundingClientRect();
+    if (!dz) return;
+    const { x, y } = info.point;
+    if (x >= dz.left && x <= dz.right && y >= dz.top && y <= dz.bottom) {
+      clearTicket(id);
+    }
+  }
+
+  const quip =
+    score >= 18
+      ? "Inbox zero energy."
+      : score >= 10
+        ? "You would survive a Monday here."
+        : "I clear these for a living. Imagine what I would do for your team.";
+
+  const buttonLabel =
+    status === "idle" ? "Start" : status === "playing" ? "Restart" : "Play again";
+
+  return (
+    <motion.section
+      id="game"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ staggerChildren: 0.06 }}
+      className="pt-24"
+    >
+      <motion.div variants={rise}>
+        <p className="font-script text-2xl text-terra">A quick game</p>
+        <h2 className="mt-1 max-w-[20ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
+          Clear my backlog.
+        </h2>
+        <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-subtle">
+          Tickets keep popping up. Drag each one into Done before the timer runs
+          out. On a phone, just tap.
+        </p>
+      </motion.div>
+
+      <motion.div
+        variants={rise}
+        className="mt-8 rounded-card border border-cardline bg-card p-5 sm:p-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
+            <Clock weight="bold" className="size-4 text-action" aria-hidden />
+            {timeLeft}s left
+          </span>
+          <button
+            type="button"
+            onClick={start}
+            className="rounded-btn bg-action px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-action-ink active:translate-y-px"
+          >
+            {buttonLabel}
+          </button>
+        </div>
+
+        <div
+          ref={arenaRef}
+          className="relative mt-4 h-[360px] overflow-hidden rounded-xl bg-paper-2/50"
+        >
+          <div
+            ref={dropRef}
+            className="absolute bottom-3 right-3 top-3 flex w-[32%] min-w-[116px] flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-story/50 bg-story/10 text-center"
+          >
+            <CheckCircle weight="fill" className="size-6 text-storyink" aria-hidden />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-storyink">
+              Done
+            </span>
+            <span className="font-serif text-3xl font-semibold text-storyink">
+              {score}
+            </span>
+            <span className="px-2 text-[11px] text-subtle">drop or tap</span>
+          </div>
+
+          {status === "idle" && (
+            <div className="absolute inset-y-0 left-0 right-[34%] flex flex-col items-center justify-center gap-2 text-center">
+              <p className="font-script text-2xl text-ink">Ready when you are</p>
+              <p className="px-4 text-[13px] text-subtle">
+                Press start, then drag tickets into Done.
+              </p>
+            </div>
+          )}
+
+          {status === "done" && (
+            <div className="absolute inset-y-0 left-0 right-[34%] flex flex-col items-center justify-center gap-2 text-center">
+              <p className="font-serif text-3xl font-semibold text-ink">
+                {score} cleared
+              </p>
+              <p className="max-w-[32ch] px-4 text-[14px] text-subtle">{quip}</p>
+            </div>
+          )}
+
+          {status === "playing" && (
+            <AnimatePresence>
+              {tickets.map((t) => (
+                <motion.div
+                  key={t.id}
+                  drag
+                  dragConstraints={arenaRef}
+                  dragSnapToOrigin
+                  dragElastic={0.2}
+                  onDragEnd={(_e, info) => handleDragEnd(t.id, info)}
+                  onClick={() => clearTicket(t.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      clearTicket(t.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Send ticket to Done: ${t.label}`}
+                  initial={reduce ? false : { opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
+                  transition={{ duration: 0.15 }}
+                  whileDrag={{ scale: 1.05, zIndex: 20 }}
+                  style={{ left: `${t.x}%`, top: `${t.y}%` }}
+                  className="absolute flex cursor-grab touch-none items-center gap-2 rounded-lg border border-cardline bg-card px-3 py-2 text-[13px] shadow-md active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+                >
+                  <BookmarkSimple
+                    weight="fill"
+                    className="size-3.5 shrink-0 text-story"
+                    aria-hidden
+                  />
+                  <span className="whitespace-nowrap font-medium text-ink">
+                    {t.label}
+                  </span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
+      </motion.div>
+    </motion.section>
+  );
+}
+
 export default function Home() {
   const rise = useRise();
   const [joinDone, setJoinDone] = useState(false);
@@ -1041,7 +1252,10 @@ export default function Home() {
             </motion.div>
 
             {/* field grid (distinct layout family from the hero) */}
-            <motion.dl variants={rise} className="grid gap-3 sm:grid-cols-2">
+            <motion.dl
+              variants={rise}
+              className="grid gap-3 self-start sm:grid-cols-2"
+            >
               {ABOUT_FIELDS.map((f) => (
                 <div
                   key={f.label}
@@ -1058,9 +1272,9 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* ============================================== SKILLS + EXPERIENCE */}
+        {/* ===================================================== EXPERIENCE */}
         <motion.section
-          id="skills"
+          id="experience"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
@@ -1068,24 +1282,18 @@ export default function Home() {
           className="pt-24"
         >
           <motion.div variants={rise}>
-            <p className="font-script text-2xl text-terra">Skills and experience</p>
+            <p className="font-script text-2xl text-terra">Experience</p>
             <h2 className="mt-1 max-w-[20ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
-              What I bring, and where I have used it.
+              Where I have been building.
             </h2>
             <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-subtle">
-              The product, AI, and data skills I work with, and the roles where
-              they shipped.
+              The roles so far, newest first.
             </p>
           </motion.div>
 
-          <div className="mt-10 space-y-14">
-            {/* experience timeline */}
+          <div className="mt-10">
             <motion.div variants={rise}>
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-subtle">
-                <Briefcase weight="bold" className="size-4 text-action" aria-hidden />
-                Experience
-              </div>
-              <ol className="relative mt-5 space-y-7">
+              <ol className="relative space-y-7">
                 {EXPERIENCE.map((e, i) => (
                   <li key={e.org} className="relative pl-7">
                     <span
@@ -1113,14 +1321,33 @@ export default function Home() {
                 ))}
               </ol>
             </motion.div>
+          </div>
+        </motion.section>
 
-            {/* skills groups */}
+        <BacklogGame />
+
+        {/* ========================================================== SKILLS */}
+        <motion.section
+          id="skills"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ staggerChildren: 0.06 }}
+          className="pt-24"
+        >
+          <motion.div variants={rise}>
+            <p className="font-script text-2xl text-terra">Skills</p>
+            <h2 className="mt-1 max-w-[20ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
+              What I work with.
+            </h2>
+            <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-subtle">
+              The product, AI, and data tools I reach for.
+            </p>
+          </motion.div>
+
+          <div className="mt-10">
             <motion.div variants={rise}>
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-subtle">
-                <Compass weight="bold" className="size-4 text-action" aria-hidden />
-                Skills
-              </div>
-              <div className="mt-5 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
                 {SKILL_GROUPS.map((g) => (
                   <div key={g.label}>
                     <div className="flex items-center gap-2 text-[12px] font-semibold text-ink">
