@@ -50,7 +50,8 @@ import {
 const EMAIL = "isha.ghatule@gmail.com";
 const LINKEDIN = "https://www.linkedin.com/in/isha-ghatule-01a316148/";
 const GITHUB = "https://github.com/ishaghatule";
-const RESUME = "/Isha_Ghatule_Resume.pdf";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const RESUME = `${BASE_PATH}/Isha_Ghatule_Resume.pdf`;
 
 // Nav is the ticket checklist (requested). Each row navigates and ticks.
 const NAV = [
@@ -598,7 +599,7 @@ function BoardCard({
             <CheckCircle weight="fill" className="size-4 text-storyink" aria-hidden />
           )}
           <Image
-            src="/portrait.jpg"
+            src={`${BASE_PATH}/portrait.jpg`}
             alt=""
             width={44}
             height={44}
@@ -744,7 +745,7 @@ function CardModal({
 
         <div className="mt-6 flex items-center gap-2 border-t border-cardline pt-4 text-sm">
           <Image
-            src="/portrait.jpg"
+            src={`${BASE_PATH}/portrait.jpg`}
             alt="Isha Ghatule"
             width={48}
             height={48}
@@ -883,7 +884,7 @@ export default function Home() {
                     className="flex items-center gap-2 font-medium hover:text-action"
                   >
                     <Image
-                      src="/portrait.jpg"
+                      src={`${BASE_PATH}/portrait.jpg`}
                       alt="Isha Ghatule"
                       width={56}
                       height={56}
@@ -1007,7 +1008,7 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-3 pt-2">
                 <Image
-                  src="/portrait.jpg"
+                  src={`${BASE_PATH}/portrait.jpg`}
                   alt="Isha Ghatule"
                   width={128}
                   height={128}
