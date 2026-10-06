@@ -987,24 +987,25 @@ export default function Home() {
           </motion.p>
           <motion.h2
             variants={rise}
-            className="mt-1 max-w-[18ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl"
+            className="mt-1 max-w-[20ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl"
           >
-            I work where engineering, design, and business meet.
+            I build things, and I always have.
           </motion.h2>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <motion.div variants={rise} className="max-w-[60ch] space-y-4 text-[15px] leading-relaxed text-ink/90">
               <p>
-                I turn messy, high-stakes problems into products people actually
-                trust. I have shipped features to real users, moved real
-                metrics, and scaled real platforms across fintech and B2B
-                analytics.
+                Hey, I&apos;m Isha. Mumbai to Blacksburg to the Bay Area,
+                I&apos;ve been building things the whole way. I&apos;ve always
+                been the curious type, the kid who took things apart to see how
+                they worked, then tried to make them better. That turned into a
+                habit of building, and I never stopped.
               </p>
               <p>
-                My foundation is technical. I write my own SQL, read an ERD, and
-                sit comfortably between data engineering and design. That lets me
-                translate between what is possible, what is usable, and what
-                moves the business.
+                Today I&apos;m a product manager in fintech, turning messy,
+                high-stakes problems into products people actually trust.
+                I&apos;ve shipped features to real users, moved real metrics,
+                and scaled real platforms across fintech and B2B analytics.
               </p>
               <div className="flex items-center gap-3 pt-2">
                 <Image
@@ -1020,6 +1021,22 @@ export default function Home() {
                     Product Manager, fiscor.ai
                   </span>
                 </div>
+              </div>
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[
+                  "oat milk matcha",
+                  "Bollywood dancer",
+                  "fiction reader",
+                  "serial builder",
+                  "Mumbai → Bay Area",
+                ].map((l) => (
+                  <span
+                    key={l}
+                    className="rounded-full bg-action/10 px-2.5 py-0.5 text-[12px] font-medium text-action-ink"
+                  >
+                    {l}
+                  </span>
+                ))}
               </div>
             </motion.div>
 
