@@ -35,6 +35,11 @@ import {
   GraduationCap,
   Briefcase,
   Compass,
+  Kanban,
+  Cpu,
+  Code,
+  ChartBar,
+  Certificate,
   LinkedinLogo,
   GithubLogo,
   EnvelopeSimple,
@@ -51,6 +56,7 @@ const RESUME = "/Isha_Ghatule_Resume.pdf";
 const NAV = [
   { id: "ticket", label: "Ticket", href: "#ticket" },
   { id: "about", label: "About", href: "#about" },
+  { id: "skills", label: "Skills", href: "#skills" },
   { id: "board", label: "My Board", href: "#board" },
   { id: "resume", label: "Resume", href: RESUME },
   { id: "contact", label: "Let's talk", href: `mailto:${EMAIL}` },
@@ -250,6 +256,109 @@ function matchQuery(it: BoardItem, q: string) {
     .toLowerCase()
     .includes(s);
 }
+
+/* --------------------------------------------------- skills + experience */
+
+const SKILL_GROUPS = [
+  {
+    icon: Kanban,
+    label: "Product",
+    items: [
+      "Lifecycle ownership",
+      "Discovery",
+      "PRDs",
+      "Roadmapping",
+      "Prioritization",
+      "A/B testing",
+      "KPI analytics",
+      "User research",
+    ],
+  },
+  {
+    icon: Cpu,
+    label: "AI and ML",
+    items: [
+      "AI voice and SMS agents",
+      "LLM workflows",
+      "Hugging Face",
+      "Vector DBs",
+      "XGBoost",
+      "SHAP",
+    ],
+  },
+  {
+    icon: Code,
+    label: "Technical",
+    items: [
+      "Python",
+      "SQL",
+      "ETL",
+      "Streamlit",
+      "Airflow",
+      "AWS",
+      "GCP",
+      "Supabase",
+      "Databricks",
+      "GitHub",
+      "Feature flags",
+      "MATLAB",
+      "C",
+    ],
+  },
+  {
+    icon: ChartBar,
+    label: "Analytics and BI",
+    items: ["Power BI", "Tableau", "Sigma", "Google Analytics", "Excel and VBA"],
+  },
+] as const;
+
+const CERTS = [
+  "AWS Cloud Practitioner",
+  "Google Analytics",
+  "McKinsey Forward Program",
+  "Base SAS and Visual Analytics",
+];
+
+const EXPERIENCE: {
+  role: string;
+  org: string;
+  dates: string;
+  tone: "action" | "story";
+  status: string;
+  blurb: string;
+  metric: string;
+}[] = [
+  {
+    role: "Product Manager",
+    org: "fiscor.ai",
+    dates: "Jun 2025 to Present",
+    tone: "action",
+    status: "In progress",
+    blurb:
+      "Own end-to-end product for a multi-tenant AI debt-collections SaaS. Took it 0 to 1 and built release and QA from scratch for a 15-person team.",
+    metric: "0 to 1",
+  },
+  {
+    role: "Product Manager",
+    org: "CRED",
+    dates: "Jul 2022 to Jul 2023",
+    tone: "story",
+    status: "Done",
+    blurb:
+      "Drove engagement and retention for fintech products, and cut funnel drop-off through A/B testing and data-driven experimentation.",
+    metric: "+22% engagement",
+  },
+  {
+    role: "Co-Founder",
+    org: "Salient Store",
+    dates: "2019",
+    tone: "story",
+    status: "Done",
+    blurb:
+      "Co-founded a Shopify store at 18, owning the technical build, day-to-day operations, and growth through Instagram and SEO.",
+    metric: "7 active months",
+  },
+];
 
 /* -------------------------------------------------------------- motion */
 
@@ -928,6 +1037,109 @@ export default function Home() {
                 </div>
               ))}
             </motion.dl>
+          </div>
+        </motion.section>
+
+        {/* ============================================== SKILLS + EXPERIENCE */}
+        <motion.section
+          id="skills"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ staggerChildren: 0.06 }}
+          className="pt-24"
+        >
+          <motion.div variants={rise}>
+            <p className="font-script text-2xl text-terra">Skills and experience</p>
+            <h2 className="mt-1 max-w-[20ch] font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
+              What I bring, and where I have used it.
+            </h2>
+            <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-subtle">
+              The product, AI, and data skills I work with, and the roles where
+              they shipped.
+            </p>
+          </motion.div>
+
+          <div className="mt-10 space-y-14">
+            {/* experience timeline */}
+            <motion.div variants={rise}>
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-subtle">
+                <Briefcase weight="bold" className="size-4 text-action" aria-hidden />
+                Experience
+              </div>
+              <ol className="relative mt-5 space-y-7">
+                {EXPERIENCE.map((e, i) => (
+                  <li key={e.org} className="relative pl-7">
+                    <span
+                      className={`absolute left-0 top-1.5 size-3 rounded-full ring-4 ring-paper ${
+                        e.tone === "action" ? "bg-action" : "bg-story"
+                      }`}
+                    />
+                    {i < EXPERIENCE.length - 1 && (
+                      <span className="absolute bottom-[-1.75rem] left-[5px] top-5 w-px bg-cardline" />
+                    )}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <h3 className="font-semibold text-ink">
+                        {e.role}, {e.org}
+                      </h3>
+                      <Lozenge tone={e.tone}>{e.status}</Lozenge>
+                    </div>
+                    <p className="mt-0.5 text-[13px] text-subtle">{e.dates}</p>
+                    <p className="mt-2 max-w-[56ch] text-[14px] leading-relaxed text-ink/90">
+                      {e.blurb}
+                    </p>
+                    <span className="mt-2.5 inline-block rounded-full bg-action/10 px-2.5 py-0.5 text-[12px] font-medium text-action-ink">
+                      {e.metric}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </motion.div>
+
+            {/* skills groups */}
+            <motion.div variants={rise}>
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-subtle">
+                <Compass weight="bold" className="size-4 text-action" aria-hidden />
+                Skills
+              </div>
+              <div className="mt-5 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+                {SKILL_GROUPS.map((g) => (
+                  <div key={g.label}>
+                    <div className="flex items-center gap-2 text-[12px] font-semibold text-ink">
+                      <g.icon weight="bold" className="size-4 text-action" aria-hidden />
+                      {g.label}
+                    </div>
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {g.items.map((it) => (
+                        <span
+                          key={it}
+                          className="rounded-full border border-cardline bg-card px-2.5 py-1 text-[12px] text-ink"
+                        >
+                          {it}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-7 border-t border-line pt-6">
+                <div className="flex items-center gap-2 text-[12px] font-semibold text-ink">
+                  <Certificate weight="bold" className="size-4 text-action" aria-hidden />
+                  Certifications
+                </div>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {CERTS.map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-full border border-cardline bg-card px-2.5 py-1 text-[12px] text-ink"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </div>
         </motion.section>
 
