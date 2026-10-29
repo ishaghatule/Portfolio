@@ -54,6 +54,17 @@ import {
 
 /* ------------------------------------------------------------------ data */
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+// Fire a named Google Analytics event (no-op if the tag has not loaded).
+function track(event: string) {
+  if (typeof window !== "undefined") window.gtag?.("event", event);
+}
+
 const EMAIL = "isha.ghatule@gmail.com";
 const LINKEDIN = "https://www.linkedin.com/in/isha-ghatule-01a316148/";
 const GITHUB = "https://github.com/ishaghatule";
@@ -460,6 +471,8 @@ function TopNav() {
       // Resume / mail: fire the action only when ticking, not when un-ticking.
       e.preventDefault();
     }
+
+    if (item.id === "resume" && willCheck) track("resume_download");
   }
 
   return (
@@ -1048,6 +1061,7 @@ export default function Home() {
                 <a
                   href={RESUME}
                   download=""
+                  onClick={() => track("resume_download")}
                   className="inline-flex items-center gap-2 rounded-btn bg-action px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-action-ink active:translate-y-px"
                 >
                   <DownloadSimple weight="bold" className="size-4" aria-hidden />
@@ -1092,6 +1106,7 @@ export default function Home() {
                     href={LINKEDIN}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => track("linkedin_click")}
                     className="flex items-center gap-2 font-medium hover:text-action"
                   >
                     <Image
@@ -1468,6 +1483,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
+              onClick={() => track("linkedin_click")}
               className="grid size-9 place-items-center rounded-full border border-line text-subtle transition-colors hover:border-action hover:text-action"
             >
               <LinkedinLogo weight="bold" className="size-4.5" />
