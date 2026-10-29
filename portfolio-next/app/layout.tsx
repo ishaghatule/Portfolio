@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Newsreader, Caveat } from "next/font/google";
 import "./globals.css";
 
@@ -36,6 +37,18 @@ export default function RootLayout({
         className={`${inter.variable} ${newsreader.variable} ${caveat.variable} font-sans antialiased`}
       >
         {children}
+
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-X5K9BPJ10S"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X5K9BPJ10S');`}
+        </Script>
       </body>
     </html>
   );
